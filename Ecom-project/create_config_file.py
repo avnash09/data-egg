@@ -9,8 +9,23 @@ config['mysql_db'] = {
     'db': 'hr_db'
 }
 
-with open('config.ini', mode='w') as f:
-    config.write(f)
+config['DEFAULT']  ={
+    'user': 'root',
+    'password': os.environ['mysqldb_pwd'],
+    'host': 'localhost',
+    'port': 3306,
+    'db': 'avi'
+}
 
-with open('config.ini', mode='r') as f:
-    print(f.read())
+def get_cfg(database = None):
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    credentials = config[database]
+    return credentials
+
+if __name__ == '__main__':
+    with open('config.ini', mode='w') as f:
+        config.write(f)
+
+    with open('config.ini', mode='r') as f:
+        print(f.read())

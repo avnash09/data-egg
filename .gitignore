@@ -1,0 +1,5 @@
+.DS_Store
+*.csv
+*.json
+sql_practice.py
+config.ini

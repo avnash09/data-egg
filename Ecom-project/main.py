@@ -1,11 +1,14 @@
 import os, pandas as pd
 from sqlalchemy import create_engine, inspect, MetaData, text
-import configparser
+from create_config_file import get_cfg
 
 def get_engine():
+    '''
     config = configparser.ConfigParser()
     config.read('config.ini')
     creds = config['mysql_db']
+    '''
+    creds = get_cfg('mysql_db')
 
     conn_str = f"mysql+pymysql://{creds['user']}:{creds['password']}@{creds['host']}:{creds['port']}/{creds['db']}"
     return(create_engine(conn_str))

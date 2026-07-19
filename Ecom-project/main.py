@@ -19,8 +19,9 @@ def get_load_order(data_dir, engine, inspector, table_list):
     metadata = MetaData()
     metadata.reflect(bind=engine, only=table_list)
     load_order = metadata.sorted_tables
+    tablenames = [tbl.name for tbl in load_order]
 
-    return (load_order)
+    return (tablenames)
 
 def load_data_to_db(data_dir):
     engine = get_engine()
@@ -35,14 +36,14 @@ def load_data_to_db(data_dir):
     tbl_load_order = get_load_order(data_dir, engine=engine, inspector=inspector, table_list=file_tbl_map.keys())
 
     for table in tbl_load_order:
-        tblname = table.name
+        tblname = table
         file = f'{tblname}.csv'
         print(f'Loading {file} into {tblname}...')
         df = pd.read_csv(os.path.join(data_dir,file))
         with engine.begin() as conn:
             conn.execute(text("SET FOREIGN_KEY_CHECKS = 0"))
             conn.execute(text(f"TRUNCATE {tblname};"))
-            df.to_sql(tblname, con=engine, if_exists='append', index=False)
+            df.to_sql(tblname, con=conn, if_exists='append', index=False)
             conn.execute(text("SET FOREIGN_KEY_CHECKS = 1"))
         print(pd.read_sql(f'select "{tblname}" as tblname, count(*) from {tblname};', con=engine))
 
